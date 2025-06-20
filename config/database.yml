@@ -9,3 +9,7 @@ default: &default
 development:
   <<: *default
   database: mikrotik-api_development
+
+test:
+  <<: *default
+  database: mikrotik-api_test
