@@ -9,6 +9,9 @@ default: &default
 development:
   <<: *default
   database: mikrotik-api_development
+production:
+  <<: *default
+  database: mikrotik-api_production
 
 test:
   <<: *default
