@@ -3,5 +3,5 @@ Station.create!([
   { name: 'LM', prefix: 'LM' },
   { name: 'Main', prefix: 'AA' },
   { name: 'Womens', prefix: 'WN' },
-  { name: 'Odol', prefix: 'AB' },
+  { name: 'Odol', prefix: 'AB' }
 ])

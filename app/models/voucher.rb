@@ -5,12 +5,12 @@ class Voucher < ApplicationRecord
 
   def self.process_voucher(code)
     voucher = find_by(code: code)
-    
+
     return unless voucher.nil?
 
-    prefix = code.split('-').first
+    prefix = code.split("-").first
     station = Station.find_by(prefix: prefix)
-    
+
     return unless station.present?
 
     create(code: code, station: station)

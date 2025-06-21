@@ -2,7 +2,7 @@ class EventsController < ApplicationController
   def create
     @event = Event.new(event_params)
     if @event.save
-      if @event.mode == 'login'
+      if @event.mode == "login"
         VoucherJob.perform_later(@event.code)
       end
       render json: @event, status: :created
