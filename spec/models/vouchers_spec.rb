@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Voucher, type: :model do
   let!(:station) { create(:station) }
   let!(:voucher) { build(:voucher, station: station) }
-  
+
   it "has a valid factory" do
     expect(voucher).to be_valid
   end
