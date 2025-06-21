@@ -1,0 +1,37 @@
+<div class="container">
+  <h1>Stations</h1>
+  <div class="row">
+    <div class="col-md-12">
+      <%= link_to 'New Station', new_station_path, class: 'btn btn-primary mb-3' %>
+    </div>
+  </div>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Prefix</th>
+        <th>Sold Voucher Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @stations.each do |station| %>
+        <tr>
+          <td><%=link_to station.name, station_path(station)%></td>
+          <td><%= station.prefix %></td>
+          <td><%= station.vouchers.count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<% if @stations.empty? %>
+  <div class="alert alert-info" role="alert">
+    No stations found.
+  </div>
+<% end %>
+<% if flash[:notice] %>
+  <div class="alert alert-success" role="alert">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
