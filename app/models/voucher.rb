@@ -16,7 +16,9 @@ class Voucher < ApplicationRecord
 
     return unless station.present?
 
-    create(code: code, station: station, amount: calculate_amount)
+    nv = new(code: code, station: station)
+    nv.amount = nv.calculate_amount
+    nv.save!
   end
 
   def self.update_amount 
