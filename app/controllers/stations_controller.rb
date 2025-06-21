@@ -3,7 +3,7 @@ class StationsController < ApplicationController
     @stations = Station.all
   end
 
-  def show 
+  def show
     @station = Station.find(params[:id])
   end
 end

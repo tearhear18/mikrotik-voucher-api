@@ -21,7 +21,7 @@ class Voucher < ApplicationRecord
     nv.save!
   end
 
-  def self.update_amount 
+  def self.update_amount
     all.each do |voucher|
       voucher.update(amount: voucher.calculate_amount)
     end
@@ -37,6 +37,6 @@ class Voucher < ApplicationRecord
 
     return 0 if num.zero?
 
-    ( num / BASE_HOUR_RATE * BASE_PRICE ).to_d
+    (num / BASE_HOUR_RATE * BASE_PRICE).to_d
   end
 end
