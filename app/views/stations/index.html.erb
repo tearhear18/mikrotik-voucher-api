@@ -31,7 +31,9 @@
       </tr>
     </tbody>
   </table>
+  <%= line_chart @event_counts, xtitle: "Time (Hour)", ytitle: "Login Count", curve: true %>
 </div>
+
 <% if @stations.empty? %>
   <div class="alert alert-info" role="alert">
     No stations found.
