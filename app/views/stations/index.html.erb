@@ -3,11 +3,14 @@
   <div class="row">
     <div class="col-4">
       <h5>Over All Login Traffic Stats</h5>
-      <%= line_chart @event_counts, xtitle: "Time (Hour)", ytitle: "Login Count", curve: true %>
+      <%= line_chart [
+        { name: "Login", data: @login_counts },
+        { name: "Logout", data: @logout_counts }
+      ], xtitle: "Time (Hour)", ytitle: "Event Count", curve: true %>
     </div>
 
     <div class="col-8">
-      <h5>Per Agent Daily Sales</h5>
+      <h5>Per Station Daily Sales</h5>
       <%= column_chart @per_station_daily_sales.map { |date, agents| { name: date, data: agents } }, ytitle: "Station Sale" %>
     </div>
   </div>
