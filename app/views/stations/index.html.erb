@@ -1,5 +1,48 @@
-<div class="container">
-  <h1>Stations</h1>
+<div class="container mt-4">
+  <div class="row">
+
+    <!-- Total Events -->
+    <div class="col-md-3 mb-4">
+      <div class="card text-white bg-primary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Total Sales</h5>
+          <h2>₱ <%=number_with_delimiter Voucher.sum(:amount)%></h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Logins -->
+    <div class="col-md-3 mb-4">
+      <div class="card text-white bg-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Daily Logins</h5>
+          <h2><%=@todays_vouchers.count %></h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+      <div class="card text-white bg-info shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Daily Sales</h5>
+          <h2><%=@todays_vouchers.sum(:amount) %></h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Logouts -->
+    <div class="col-md-3 mb-4">
+      <div class="card text-white bg-danger shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Stations</h5>
+          <h2><%= Station.count %></h2>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
   <div class="row">
     <div class="col-4">
       <h5>Over All Login Traffic Stats</h5>
