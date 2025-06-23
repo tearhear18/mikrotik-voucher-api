@@ -12,20 +12,21 @@
     </div>
 
     <!-- Total Logins -->
+    
     <div class="col-md-3 mb-4">
-      <div class="card text-white bg-success shadow-sm">
+      <div class="card text-white bg-info shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Daily Logins</h5>
-          <h2><%=@todays_vouchers.count %></h2>
+          <h5 class="card-title">Daily Sales</h5>
+          <h2>₱ <%=number_with_delimiter @todays_vouchers.sum(:amount) %></h2>
         </div>
       </div>
     </div>
 
     <div class="col-md-3 mb-4">
-      <div class="card text-white bg-info shadow-sm">
+      <div class="card text-white bg-success shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Daily Sales</h5>
-          <h2><%=@todays_vouchers.sum(:amount) %></h2>
+          <h5 class="card-title">Total Collected</h5>
+          <h2>₱ <%=number_with_delimiter Voucher.collected.sum(:amount)%></h2>
         </div>
       </div>
     </div>
@@ -34,8 +35,8 @@
     <div class="col-md-3 mb-4">
       <div class="card text-white bg-danger shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Stations</h5>
-          <h2><%= Station.count %></h2>
+          <h5 class="card-title">Total Collectibles</h5>
+          <h2>₱ <%=number_with_delimiter Voucher.not_collected.sum(:amount)%></h2>
         </div>
       </div>
     </div>
@@ -63,7 +64,9 @@
         <th>Station Name</th>
         <th>Prefix</th>
         <th>Sold Voucher</th>
-        <th>Total Amount</th>
+        <th>Total Sales</th>
+        <th>Total Uncollected</th>
+        <th>Total Collected</th>
       </tr>
     </thead>
     <tbody>
@@ -73,12 +76,16 @@
           <td><%= station.prefix %></td>
           <td><%= station.vouchers.count %></td>
           <td><%= station.vouchers.sum(:amount) %></td>
+          <td><%= station.vouchers.not_collected.sum(:amount) %></td>
+          <td><%= station.vouchers.collected.sum(:amount) %></td>
         </tr>
       <% end %>
       <tr>
         <td colspan="2" class="text-right"></td>
-        <td><%= @stations.sum { |s| s.vouchers.count } %></td>
-        <td><%= @stations.sum { |s| s.vouchers.sum(:amount) } %></td>
+        <td><%= Voucher.count%></td>
+        <td><%= Voucher.sum(:amount) %></td>
+        <td><%= Voucher.not_collected.sum(:amount) %></td>
+        <td><%= Voucher.collected.sum(:amount) %></td>
       </tr>
     </tbody>
   </table>

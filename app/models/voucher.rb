@@ -4,6 +4,8 @@ class Voucher < ApplicationRecord
   BASE_HOUR_RATE = 3
   BASE_PRICE = 5.0
 
+  scope :collected, -> { where(is_collected: true) }
+  scope :not_collected, -> { where(is_collected: false) }
   validates :code, presence: true, uniqueness: true
 
   def self.process_voucher(code)
