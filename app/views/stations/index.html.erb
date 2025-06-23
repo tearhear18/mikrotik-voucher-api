@@ -75,17 +75,17 @@
           <td><%=link_to station.name, station_path(station)%></td>
           <td><%= station.prefix %></td>
           <td><%= station.vouchers.count %></td>
-          <td><%= station.vouchers.sum(:amount) %></td>
-          <td><%= station.vouchers.not_collected.sum(:amount) %></td>
-          <td><%= station.vouchers.collected.sum(:amount) %></td>
+          <td>₱ <%=number_with_delimiter station.vouchers.sum(:amount) %></td>
+          <td>₱ <%=number_with_delimiter station.vouchers.not_collected.sum(:amount) %></td>
+          <td>₱ <%=number_with_delimiter station.vouchers.collected.sum(:amount) %></td>
         </tr>
       <% end %>
       <tr>
         <td colspan="2" class="text-right"></td>
         <td><%= Voucher.count%></td>
-        <td><%= Voucher.sum(:amount) %></td>
-        <td><%= Voucher.not_collected.sum(:amount) %></td>
-        <td><%= Voucher.collected.sum(:amount) %></td>
+        <td>₱ <%=number_with_delimiter Voucher.sum(:amount) %></td>
+        <td>₱ <%=number_with_delimiter Voucher.not_collected.sum(:amount) %></td>
+        <td>₱ <%=number_with_delimiter Voucher.collected.sum(:amount) %></td>
       </tr>
     </tbody>
   </table>
