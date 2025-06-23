@@ -4,7 +4,7 @@ class Station < ApplicationRecord
 
   has_many :vouchers, dependent: :destroy
 
-  def commission 
+  def commission
     # Assuming commission is a fixed percentage of the total amount
     # This can be adjusted based on business logic
     total_amount = vouchers.not_collected.sum(:amount)
