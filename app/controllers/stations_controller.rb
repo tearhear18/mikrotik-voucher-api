@@ -2,7 +2,7 @@ class StationsController < ApplicationController
   def index
     @stations = Station.all
     time_zone = "Asia/Manila"
-    today = Time.zone.now.to_date.strftime("%Y-%m-%d")
+    today = Date.current.in_time_zone(time_zone).strftime("%Y-%m-%d")
 
     start_of_day = Time.now.in_time_zone(time_zone).beginning_of_day
     end_of_day   = Time.now.in_time_zone(time_zone).end_of_day
