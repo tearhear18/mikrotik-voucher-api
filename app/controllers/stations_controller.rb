@@ -21,7 +21,9 @@ class StationsController < ApplicationController
       .count
       
     raw_data = Voucher.where("created_at >= ?", 10.days.ago).group(:station_id).group_by_day(:created_at, time_zone: time_zone).sum(:amount)
-    
+    @voucher_sales = Voucher.where("created_at >= ?", 10.days.ago)
+                         .group_by_day(:created_at, time_zone: time_zone)
+                         .sum(:amount)
     
     @per_station_daily_sales = raw_data.each_with_object({}) do |((station_id, date), price), result|
       agent_name = Station.find(station_id).name

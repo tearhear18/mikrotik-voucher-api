@@ -45,17 +45,43 @@
 
 
   <div class="row">
-    <div class="col-12 col-md-6 col-lg-4">
-      <h5>Over All Login Traffic Stats</h5>
+    <div class="col-12 col-md-6">
+      <h5>All Stations Sales</h5>
+      <%= column_chart @voucher_sales, 
+        ytitle: "Voucher Sales", 
+        xtitle: "Date",
+        library: {
+          plotOptions: {
+            column: {
+              dataLabels: {
+                enabled: true
+              }
+            }
+          }
+        } 
+      %>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <h5>Per Station Daily Sales</h5>
+      <%= column_chart @per_station_daily_sales.map { |date, agents| { name: date, data: agents } }, 
+      ytitle: "Station Sale",
+      library: {
+        plotOptions: {
+          column: {
+            dataLabels: {
+              enabled: true
+            }
+          }
+        }
+      } %>
+    </div>
+    <div class="col-12">
+      <h5>Today Login Traffic Stats</h5>
       <%= line_chart [
         { name: "Login", data: @login_counts },
         { name: "Logout", data: @logout_counts }
       ], xtitle: "Time (Hour)", ytitle: "Event Count", curve: true %>
-    </div>
-
-    <div class="col-12 col-md-6 col-lg-8">
-      <h5>Per Station Daily Sales</h5>
-      <%= column_chart @per_station_daily_sales.map { |date, agents| { name: date, data: agents } }, ytitle: "Station Sale" %>
     </div>
   </div>
   <div class="col-12">
