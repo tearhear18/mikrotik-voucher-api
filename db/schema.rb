@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_23_002449) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_28_015032) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_23_002449) do
     t.integer "mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "login_counters", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "count"
   end
 
   create_table "stations", force: :cascade do |t|

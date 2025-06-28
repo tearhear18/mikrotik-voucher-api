@@ -9,17 +9,13 @@ class StationsController < ApplicationController
 
     @todays_vouchers = Voucher.where(created_at: start_of_day..end_of_day)
 
-    @login_counts = Event
-      .where(mode: "login", created_at: 24.hours.ago..Time.current)
-      .group_by_hour(:created_at, format: "%Y-%m-%d %H:%M", series: false, time_zone: time_zone)
-      .count
-
-
-    @logout_counts = Event
-      .where(mode: "logout", created_at: 24.hours.ago..Time.current)
-      .group_by_hour(:created_at, format: "%Y-%m-%d %H:%M", series: false, time_zone: time_zone)
-      .count
-      
+    @online = LoginCounter
+                .last(60)
+                .map do |entry|
+                  time = entry.created_at.in_time_zone("Asia/Manila")
+                  [time, entry.count]
+                end
+    
     raw_data = Voucher.where("created_at >= ?", 10.days.ago).group(:station_id).group_by_day(:created_at, time_zone: time_zone).sum(:amount)
     @voucher_sales = Voucher.where("created_at >= ?", 10.days.ago)
                          .group_by_day(:created_at, time_zone: time_zone)

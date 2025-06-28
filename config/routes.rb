@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   resources :vouchers, only: [ :index, :create ]
   resources :events, only: [ :create ]
   resources :stations
+  resources :login_counters, only: [ :create ]
 end

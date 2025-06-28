@@ -77,11 +77,13 @@
       } %>
     </div>
     <div class="col-12">
-      <h5>Today Login Traffic Stats</h5>
+      <h5>Today Online Stats</h5>
       <%= line_chart [
-        { name: "Login", data: @login_counts },
-        { name: "Logout", data: @logout_counts }
-      ], xtitle: "Time (Hour)", ytitle: "Event Count", curve: true %>
+      { name: "Login", data: @online }
+    ],
+    xtitle: "Time (Hour)",
+    ytitle: "Event Count",
+    curve: true %>
     </div>
   </div>
   <div class="col-12">

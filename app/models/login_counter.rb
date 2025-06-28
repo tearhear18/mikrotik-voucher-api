@@ -1,0 +1,2 @@
+class LoginCounter < ApplicationRecord
+end
