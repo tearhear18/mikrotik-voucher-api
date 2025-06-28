@@ -7,4 +7,8 @@ class LoginCountersController < ApplicationController
       render json: @login_counter.errors, status: :unprocessable_entity
     end
   end
+
+  def login_counter_params
+    params.require(:login_counter).permit(:count)
+  end
 end
