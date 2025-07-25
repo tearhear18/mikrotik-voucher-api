@@ -1,32 +1,24 @@
 class Voucher < ApplicationRecord
   belongs_to :station
 
-  BASE_HOUR_RATE = 3
-  BASE_PRICE = 5.0
+  validates :code, presence: true, uniqueness: true
+  validates :amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   scope :collected, -> { where(is_collected: true) }
   scope :not_collected, -> { where(is_collected: false) }
-  validates :code, presence: true, uniqueness: true
+  scope :for_station, ->(station) { where(station: station) }
+  scope :recent, -> { order(created_at: :desc) }
+
+  delegate :name, to: :station, prefix: true
 
   def self.process_voucher(code)
-    voucher = find_by(code: code)
-
-    return unless voucher.nil?
-
-    prefix = code.split("-").first
-    station = Station.find_by(prefix: prefix)
-
-    return unless station.present?
-
-    nv = new(code: code, station: station)
-    nv.amount = nv.calculate_amount
-    nv.save!
+    VoucherService.process_voucher(code)
+  rescue VoucherService::StationNotFoundError, VoucherService::InvalidVoucherError
+    nil
   end
 
   def self.update_amount
-    all.each do |voucher|
-      voucher.update(amount: voucher.calculate_amount)
-    end
+    VoucherService.update_all_amounts
   end
 
   def self.find_by_code(code)
@@ -34,11 +26,30 @@ class Voucher < ApplicationRecord
   end
 
   def calculate_amount
-    # Extract the numeric part of the code
-    num = code.split("-").last[0].to_i
+    VoucherService.new.calculate_amount(code)
+  end
 
-    return 0 if num.zero?
+  def collect!
+    update!(is_collected: true, collected_at: Time.current)
+  end
 
-    (num / BASE_HOUR_RATE * BASE_PRICE).to_d
+  def uncollect!
+    update!(is_collected: false, collected_at: nil)
+  end
+
+  def collected?
+    is_collected?
+  end
+
+  def prefix
+    code.split("-").first
+  end
+
+  def numeric_part
+    code.split("-").last[0].to_i
+  end
+
+  def hours_purchased
+    numeric_part
   end
 end

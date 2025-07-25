@@ -1,14 +1,18 @@
 require 'net/ssh'
+require 'shellwords'
 
 class MikrotikService
-  def initialize(host: '192.168.88.1', user: 'ramel', password: '123123123')
+  class ConnectionError < StandardError; end
+  class CommandError < StandardError; end
+
+  def initialize(host:, user:, password:)
     @host = host
     @user = user
     @password = password
-    @connection = establish_connection
+    @connection = nil
   end
 
-  def add_hotspot_user_profile(name:,  rate_limit: nil, shared_users: 1, idle_timeout: 'none')
+  def add_hotspot_user_profile(name:, rate_limit: nil, shared_users: 1, idle_timeout: 'none')
     command = "/ip hotspot user profile add " \
               "name=#{Shellwords.escape(name)} " \
               "shared-users=#{shared_users} " \
@@ -21,42 +25,61 @@ class MikrotikService
 
   def add_user(username:, profile: 'default', time_limit: '1d')
     command = build_user_command(username, profile, time_limit)
-      
+    execute_command(command)
   end
 
   def fetch_router_data
     command = '/system resource print'
     response = execute_command(command)
-    parsed_hash = response.lines.each_with_object({}) do |line, hash|
-      data = line.split(':', 2).map(&:strip)
-      hash[data[0]] = data[1] if data.size == 2
-    end
+    
+    parse_router_response(response)
+  end
+
+  def list_hotspot_users
+    command = '/ip hotspot user print'
+    execute_command(command)
+  end
+
+  def remove_user(username:)
+    command = "/ip hotspot user remove [find name=#{Shellwords.escape(username)}]"
+    execute_command(command)
+  end
+
+  def disconnect
+    @connection&.close
+    @connection = nil
   end
 
   private
 
+  def connection
+    @connection ||= establish_connection
+  end
+
   def establish_connection
-    Net::SSH.start(@host, @user, password: @password, 
-                  timeout: 10,
-                  auth_methods: ['password'],
-                  verbose: :error) # For debugging
+    Net::SSH.start(@host, @user, 
+                   password: @password, 
+                   timeout: 10,
+                   auth_methods: ['password'],
+                   verbose: :error)
+  rescue Net::SSH::Exception => e
+    raise ConnectionError, "Failed to connect to MikroTik router: #{e.message}"
   end
 
   def build_user_command(username, profile, time_limit)
-    # Proper MikroTik CLI syntax with correct parameter format
     "/ip hotspot user add " \
-    "name=#{username.shellescape} " \
-    "profile=#{profile.shellescape} " \
-    "limit-uptime=#{time_limit.shellescape}"
+    "name=#{Shellwords.escape(username)} " \
+    "profile=#{Shellwords.escape(profile)} " \
+    "limit-uptime=#{Shellwords.escape(time_limit)}"
   end
 
   def execute_command(command)
     output = ''
-    @connection.open_channel do |channel|
+    exit_status = nil
+
+    connection.open_channel do |channel|
       channel.exec(command) do |ch, success|
-        unless success
-          raise "SSH command failed to start: #{command}"
-        end
+        raise CommandError, "SSH command failed to start: #{command}" unless success
 
         channel.on_data do |_, data|
           output << data
@@ -67,13 +90,24 @@ class MikrotikService
         end
 
         channel.on_request("exit-status") do |_, data|
-          @exit_status = data.read_long
+          exit_status = data.read_long
         end
       end
     end
 
-    @connection.loop
-    output
-    
+    connection.loop
+
+    if exit_status && exit_status != 0
+      raise CommandError, "Command failed with exit status #{exit_status}: #{output}"
+    end
+
+    output.strip
+  end
+
+  def parse_router_response(response)
+    response.lines.each_with_object({}) do |line, hash|
+      data = line.split(':', 2).map(&:strip)
+      hash[data[0]] = data[1] if data.size == 2
+    end
   end
 end

@@ -2,20 +2,24 @@ class SessionsController < ApplicationController
   skip_before_action :must_be_authenticated
   
   def new
-    redirect_to root_path if session[:id].present?
+    redirect_to root_path if logged_in?
   end
 
   def create
     user = User.find_by(username: session_params[:username])
-    raise UserError.new('Invalid Account', new_session_path) unless user&.authenticate(session_params[:password])
-
-    session[:id] = user.id
-    redirect_to root_path
+    
+    if user&.authenticate(session_params[:password])
+      log_in(user)
+      redirect_to root_path, notice: 'Successfully logged in.'
+    else
+      flash.now[:alert] = 'Invalid username or password.'
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def logout
-    session.clear
-    redirect_to root_path
+    log_out
+    redirect_to root_path, notice: 'Successfully logged out.'
   end
 
   private 

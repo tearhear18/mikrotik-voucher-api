@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -16,10 +15,15 @@ Rails.application.routes.draw do
   resources :routers do 
     member do
       get :fetch_router_data
+      post :test_connection
     end
 
     resources :stations
-    resources :hotspot_profiles
+    resources :hotspot_profiles do
+      member do
+        post :create_on_router
+      end
+    end
   end
   
   resources :sessions, only: [:new, :create] do 
@@ -28,12 +32,31 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :vouchers, only: [:index, :create] do
+    member do
+      patch :collect
+      patch :uncollect
+    end
+    
+    collection do
+      post :process_code
+    end
+  end
+  
+  resources :events, only: [:create]
+  resources :stations, only: [:index]
+  resources :login_counters, only: [:create]
 
-
-
-
-  resources :vouchers, only: [ :index, :create ]
-  resources :events, only: [ :create ]
-  resources :stations
-  resources :login_counters, only: [ :create ]
+  # API routes
+  namespace :api do
+    namespace :v1 do
+      resources :vouchers, only: [:create, :show] do
+        collection do
+          post :process
+        end
+      end
+      resources :stations, only: [:index, :show]
+      resources :routers, only: [:index, :show]
+    end
+  end
 end
