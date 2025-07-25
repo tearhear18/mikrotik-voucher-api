@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_25_124905) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_25_140637) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,8 +90,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_124905) do
     t.datetime "updated_at", null: false
     t.boolean "is_collected", default: false
     t.datetime "collected_at"
+    t.bigint "hotspot_profile_id", null: false
+    t.string "limit_update"
     t.index ["code"], name: "index_vouchers_on_code", unique: true
     t.index ["collected_at"], name: "index_vouchers_on_collected_at"
+    t.index ["hotspot_profile_id"], name: "index_vouchers_on_hotspot_profile_id"
     t.index ["station_id", "created_at"], name: "index_vouchers_on_station_id_and_created_at"
     t.index ["station_id"], name: "index_vouchers_on_station_id"
   end
@@ -100,5 +103,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_25_124905) do
   add_foreign_key "routers", "users"
   add_foreign_key "station_documents", "stations"
   add_foreign_key "stations", "routers"
+  add_foreign_key "vouchers", "hotspot_profiles"
   add_foreign_key "vouchers", "stations"
 end

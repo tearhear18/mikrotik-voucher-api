@@ -47,4 +47,23 @@ class RouterConfigurationService
   ensure
     service&.disconnect
   end
+
+  def sync_hotspot_profiles
+    begin
+      profiles = mikrotik_service.fetch_hotspot_profiles
+      return false unless profiles.is_a?(Array)
+      # Remove all existing profiles and re-create from fetched data
+      @router.hotspot_profiles.destroy_all
+      profiles.each do |profile_data|
+        @router.hotspot_profiles.create(
+          name: profile_data[:name],
+          rate_limit: profile_data[:rate_limit]
+        )
+      end
+      true
+    rescue => e
+      Rails.logger.error "Failed to sync hotspot profiles: #{e.message}"
+      false
+    end
+  end
 end

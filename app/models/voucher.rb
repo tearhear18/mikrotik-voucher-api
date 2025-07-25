@@ -1,5 +1,6 @@
 class Voucher < ApplicationRecord
   belongs_to :station
+  belongs_to :hotspot_profile, optional: true
 
   validates :code, presence: true, uniqueness: true
   validates :amount, presence: true, numericality: { greater_than_or_equal_to: 0 }

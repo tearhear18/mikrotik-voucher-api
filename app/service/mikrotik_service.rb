@@ -15,12 +15,10 @@ class MikrotikService
 
   def add_hotspot_user_profile(name:, rate_limit: nil, shared_users: 1, idle_timeout: 'none')
     command = "/ip hotspot user profile add " \
-              "name=#{Shellwords.escape(name)} " \
+              "name=#{quote_mikrotik_value(name)} " \
               "shared-users=#{shared_users} " \
-              "idle-timeout=#{Shellwords.escape(idle_timeout)}"
-
-    command += " rate-limit=#{Shellwords.escape(rate_limit)}" if rate_limit.present?
-    
+              "idle-timeout=#{quote_mikrotik_value(idle_timeout)}"
+    command += " rate-limit=#{quote_mikrotik_value(rate_limit)}" if rate_limit.present?
     execute_command(command)
   end
 
@@ -44,6 +42,15 @@ class MikrotikService
   def remove_user(username:)
     command = "/ip hotspot user remove [find name=#{Shellwords.escape(username)}]"
     execute_command(command)
+  end
+
+  def fetch_hotspot_profiles
+    # TODO: Implement actual MikroTik API call
+    # Example mock data:
+    [
+      { name: 'default', rate_limit: '1M/1M' },
+      { name: 'premium', rate_limit: '5M/5M' }
+    ]
   end
 
   def disconnect
@@ -111,5 +118,9 @@ class MikrotikService
       data = line.split(':', 2).map(&:strip)
       hash[data[0]] = data[1] if data.size == 2
     end
+  end
+
+  def quote_mikrotik_value(val)
+    val.to_s.include?(' ') ? "\"#{val}\"" : val
   end
 end

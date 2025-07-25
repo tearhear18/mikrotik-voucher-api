@@ -24,9 +24,6 @@ class StationsController < ApplicationController
   end
 
   def show
-    @recent_vouchers = @station.recent_vouchers
-    @daily_sales = @station.daily_sales
-    @commission = @station.commission
   end
 
   private

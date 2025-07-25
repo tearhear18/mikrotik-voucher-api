@@ -14,13 +14,37 @@ class VouchersController < ApplicationController
   def show
   end
 
+  def new
+    @station = Station.find(params[:station_id])
+    @router = @station.router
+    @voucher = Voucher.new
+  end
+
   def create
-    @voucher = VoucherService.process_voucher(voucher_params[:code])
-    
-    if @voucher
-      redirect_to @voucher, notice: 'Voucher was successfully processed.'
+    @station = Station.find(params[:station_id])
+    @router = @station.router
+    @hotspot_profile = HotspotProfile.find(params[:voucher][:hotspot_profile_id])
+    limit_update = params[:voucher][:limit_update]
+    quantity = params[:voucher][:quantity].to_i
+    vouchers = []
+    quantity.times do |i|
+      code = "#{@station.prefix}-#{SecureRandom.hex(3).upcase}"
+      voucher = Voucher.new(
+        code: code,
+        station: @station,
+        hotspot_profile: @hotspot_profile,
+        limit_update: limit_update
+      )
+      voucher.amount = voucher.calculate_amount
+      vouchers << voucher if voucher.save
+    end
+    if vouchers.any?
+      redirect_to router_station_path(@router, @station), notice: "#{vouchers.size} vouchers generated."
+      vouchers.each do |voucher|
+        VoucherJob.perform_later(voucher.id)
+      end
     else
-      redirect_to vouchers_path, alert: 'Voucher already exists or invalid code.'
+      redirect_to router_station_path(@router, @station), alert: 'Failed to generate vouchers.'
     end
   end
 

@@ -34,6 +34,11 @@ class AddMissingColumns < ActiveRecord::Migration[8.0]
       add_foreign_key :hotspot_profiles, :routers
     end
     
+    # Add missing columns to vouchers if they don't exist
+    unless column_exists?(:vouchers, :hotspot_profile_id)
+      add_reference :vouchers, :hotspot_profile, foreign_key: true
+    end
+    
     # Add indexes for better performance
     add_index :vouchers, :collected_at
     add_index :vouchers, [:station_id, :created_at]
