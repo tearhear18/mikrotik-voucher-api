@@ -9,10 +9,10 @@ class Voucher < ApplicationRecord
   # Scopes for better querying
   scope :collected, -> { where(is_collected: true) }
   scope :not_collected, -> { where(is_collected: false) }
-  scope :recent, -> { order(created_at: :desc) }
+  scope :recent, -> { order("vouchers.created_at DESC") }
   scope :by_station, ->(station) { where(station: station) }
-  scope :by_date_range, ->(start_date, end_date) { where(created_at: start_date..end_date) }
-  scope :today, -> { where(created_at: Time.current.beginning_of_day..Time.current.end_of_day) }
+  scope :by_date_range, ->(start_date, end_date) { where("vouchers.created_at BETWEEN ? AND ?", start_date, end_date) }
+  scope :today, -> { where("vouchers.created_at >= ? AND vouchers.created_at <= ?", Time.current.beginning_of_day, Time.current.end_of_day) }
 
   # Delegates for easier access
   delegate :name, to: :station, prefix: true

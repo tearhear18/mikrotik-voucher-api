@@ -24,7 +24,7 @@
       <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
           <div class="inner">
-            <h3><%= current_user.routers.count %></h3>
+            <h3><%= @router_count %></h3>
             <p>Total Routers</p>
           </div>
           <div class="icon">
@@ -40,7 +40,7 @@
       <div class="col-lg-3 col-6">
         <div class="small-box bg-success">
           <div class="inner">
-            <h3><%= Station.by_user(current_user).count %></h3>
+            <h3><%= @station_count %></h3>
             <p>Total Stations</p>
           </div>
           <div class="icon">
@@ -56,7 +56,7 @@
       <div class="col-lg-3 col-6">
         <div class="small-box bg-warning">
           <div class="inner">
-            <h3><%= Voucher.joins(station: :router).where(routers: { user: current_user }).count %></h3>
+            <h3><%= @voucher_count %></h3>
             <p>Total Vouchers</p>
           </div>
           <div class="icon">
@@ -72,7 +72,7 @@
       <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
           <div class="inner">
-            <h3>₱<%= Voucher.joins(station: :router).where(routers: { user: current_user }).today.sum(:amount) %></h3>
+            <h3>₱<%= @revenue_today %></h3>
             <p>Revenue Today</p>
           </div>
           <div class="icon">
@@ -102,12 +102,7 @@
             </div>
           </div>
           <div class="card-body">
-            <% voucher_sales = Voucher.joins(station: :router)
-                                     .where(routers: { user: current_user })
-                                     .where("created_at >= ?", 10.days.ago)
-                                     .group_by_day(:created_at)
-                                     .sum(:amount) %>
-            <%= line_chart voucher_sales, height: "300px", colors: ["#007bff"] %>
+            <%= line_chart @voucher_sales, height: "300px", colors: ["#007bff"] %>
           </div>
         </div>
       </div>
@@ -125,13 +120,8 @@
           </div>
           <div class="card-body p-0">
             <ul class="products-list product-list-in-card pl-2 pr-2">
-              <% recent_vouchers = Voucher.joins(station: :router)
-                                          .where(routers: { user: current_user })
-                                          .recent
-                                          .limit(5)
-                                          .includes(:station) %>
-              <% if recent_vouchers.any? %>
-                <% recent_vouchers.each do |voucher| %>
+              <% if @recent_vouchers.any? %>
+                <% @recent_vouchers.each do |voucher| %>
                   <li class="item">
                     <div class="product-img">
                       <span class="badge badge-<%= voucher.collected? ? 'success' : 'warning' %>">

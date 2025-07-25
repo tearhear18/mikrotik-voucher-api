@@ -46,7 +46,7 @@
             <i class="nav-icon fas fa-wifi"></i>
             <p>
               Stations
-              <span class="right badge badge-success"><%= Station.by_user(current_user).count if current_user %></span>
+                             <span class="right badge badge-success"><%= current_user_station_count %></span>
             </p>
           <% end %>
         </li>
@@ -57,9 +57,7 @@
             <i class="nav-icon fas fa-ticket-alt"></i>
             <p>
               Vouchers
-              <% if current_user %>
-                <span class="right badge badge-warning"><%= Voucher.joins(station: :router).where(routers: { user: current_user }).count %></span>
-              <% end %>
+                             <span class="right badge badge-warning"><%= current_user_voucher_count %></span>
             </p>
           <% end %>
         </li>
