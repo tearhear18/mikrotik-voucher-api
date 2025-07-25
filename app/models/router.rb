@@ -1,4 +1,5 @@
 class Router < ApplicationRecord
+  include BandwidthOptions
   has_many :stations, dependent: :destroy
   has_many :hotspot_profiles, dependent: :destroy
   belongs_to :user
@@ -7,9 +8,6 @@ class Router < ApplicationRecord
   validates :host_name, presence: true, format: { with: /\A\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/, message: "must be a valid IP address" }
   validates :username, presence: true
   validates :password, presence: true
-
-  # Store raw data as JSON
-  serialize :raw_data, JSON
 
   def configuration_service
     @configuration_service ||= RouterConfigurationService.for_router(self)

@@ -7,7 +7,7 @@ class AddMissingColumns < ActiveRecord::Migration[8.0]
     add_column :stations, :commission_rate, :decimal, precision: 5, scale: 4, default: 0.3
     
     # Add raw_data to routers for storing connection info
-    add_column :routers, :raw_data, :text, null: true
+    add_column :routers, :raw_data, :text, null: true unless column_exists?(:routers, :raw_data)
     
     # Add missing columns to hotspot_profiles if they don't exist
     unless column_exists?(:hotspot_profiles, :name)

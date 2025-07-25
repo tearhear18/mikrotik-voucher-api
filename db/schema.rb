@@ -29,6 +29,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_010900) do
     t.jsonb "raw_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "rate_limit"
+    t.integer "shared_users", default: 1
+    t.string "idle_timeout", default: "none"
+    t.index ["router_id", "name"], name: "index_hotspot_profiles_on_router_id_and_name", unique: true
     t.index ["router_id"], name: "index_hotspot_profiles_on_router_id"
   end
 
@@ -64,6 +68,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_010900) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "router_id", null: false
+    t.decimal "commission_rate", precision: 5, scale: 4, default: "0.3"
     t.index ["prefix"], name: "index_stations_on_prefix", unique: true
     t.index ["router_id"], name: "index_stations_on_router_id"
   end
@@ -83,7 +88,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_010900) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_collected", default: false
+    t.datetime "collected_at"
     t.index ["code"], name: "index_vouchers_on_code", unique: true
+    t.index ["collected_at"], name: "index_vouchers_on_collected_at"
+    t.index ["station_id", "created_at"], name: "index_vouchers_on_station_id_and_created_at"
     t.index ["station_id"], name: "index_vouchers_on_station_id"
   end
 
