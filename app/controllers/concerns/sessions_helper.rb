@@ -1,27 +1,26 @@
 module SessionsHelper
   
-  private 
-
-  def must_be_authenticated
-    user = User.find_by_id(session[:id] || 0)
-    if user.nil?
-      session.clear
-      redirect_to new_session_path
-    else
+  def current_user
+    user = User.find_by_id(session[:user_id] || 0)
+    if user
       @current_user = user
+    else
+      @current_user = nil
     end
   end
 
-  def check_permissions
-    return true if current_user.superb?
-    raise UserError.new('Not Allowed', unauthorized_index_path) if current_user.abilities.nil? 
+  def logged_in?
+    !current_user.nil?
+  end
 
-    permissions = current_user.abilities[params[:controller]]
-    raise UserError.new('Not Allowed', unauthorized_index_path) if permissions.nil?
+  def must_be_authenticated
+    return if logged_in?
+    
+    session.clear
+    redirect_to new_session_path, alert: 'Please log in to continue.'
+  end
 
-    allowed_action = permissions.keys
-    return true if allowed_action.include? params[:action]
-
-    raise UserError.new('Not Allowed', unauthorized_index_path)
+  def current_user_vouchers
+    Voucher.joins(station: :router).where(routers: { user: current_user })
   end
 end

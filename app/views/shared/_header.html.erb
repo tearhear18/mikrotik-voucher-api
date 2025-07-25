@@ -27,7 +27,7 @@
           <i class="fas fa-user mr-2"></i> Profile
         </a>
         <div class="dropdown-divider"></div>
-        <%= link_to logout_sessions_path, class: "dropdown-item", method: :delete do %>
+                 <%= link_to logout_sessions_path, class: "dropdown-item", data: { "turbo-method": "delete" } do %>
           <i class="fas fa-sign-out-alt mr-2"></i> Logout
         <% end %>
       </div>

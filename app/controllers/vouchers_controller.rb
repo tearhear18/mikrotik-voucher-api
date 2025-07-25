@@ -79,9 +79,7 @@ class VouchersController < ApplicationController
     redirect_to vouchers_path, alert: 'Voucher not found.'
   end
 
-  def current_user_vouchers
-    Voucher.joins(station: :router).where(routers: { user: current_user })
-  end
+
 
   def voucher_params
     params.require(:voucher).permit(:hotspot_profile_id, :limit_update, :quantity)
