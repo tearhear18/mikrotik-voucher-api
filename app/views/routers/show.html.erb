@@ -12,16 +12,89 @@
   <section class="content">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-8">
-          <div class="card">
+        <!-- Router Connection Info -->
+        <div class="col-md-4">
+          <div class="card card-info card-outline mb-3">
             <div class="card-header">
-              <h3 class="card-title">Stations List</h3>
+              <h3 class="card-title"><i class="fas fa-network-wired"></i> Connection</h3>
               <div class="card-tools">
-                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#newStationModal">New Station</button>
+                <button type="button" class="btn btn-xs btn-secondary" data-toggle="modal" data-target="#editRouterModal">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
               </div>
             </div>
-            <div class="card-body">
-              <table class="table table-bordered table-striped">
+            <div class="card-body p-2">
+              <dl class="row mb-0">
+                <dt class="col-5">Host</dt>
+                <dd class="col-7"><%= @router.host_name %></dd>
+                <dt class="col-5">Port</dt>
+                <dd class="col-7">
+                  <span class="badge badge-<%= @router.port && @router.port != 22 ? 'warning' : 'secondary' %>">
+                    <%= @router.port || 22 %>
+                  </span>
+                </dd>
+                <dt class="col-5">Username</dt>
+                <dd class="col-7"><%= @router.username %></dd>
+                <dt class="col-5">Password</dt>
+                <dd class="col-7">******</dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- Device Info Card -->
+          
+
+          <!-- Hotspot Profiles -->
+          <div class="card card-success card-outline mb-3">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-user-shield"></i> Hotspot Profiles</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#createHotspotProfileModal">
+                  <i class="fas fa-plus"></i> Add
+                </button>
+                <%= button_to 'Sync from MikroTik', sync_router_hotspot_profiles_path(@router), method: :post, class: 'btn btn-xs btn-secondary', form: { style: 'display:inline' } %>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <table class="table table-sm table-bordered table-striped mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Rate</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @profiles.each do |profile| %>
+                    <tr>
+                      <td><%= profile.id %></td>
+                      <td><%= profile.name %></td>
+                      <td><%= profile.rate_limit %></td>
+                      <td>
+                        <%= button_to 'Remove', router_hotspot_profile_path(@router, profile), method: :delete, data: { confirm: 'Remove this hotspot profile?' }, class: 'btn btn-xs btn-danger' %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stations List -->
+        <div class="col-md-8">
+          <div class="card card-primary card-outline">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-broadcast-tower"></i> Stations <span class="badge badge-info"><%= @stations.size %></span></h3>
+              <div class="card-tools">  
+                <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#newStationModal">
+                  <i class="fas fa-plus"></i> New
+                </button>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <table class="table table-bordered table-striped table-hover">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -35,49 +108,6 @@
                       <td><%= station.id %></td>
                       <td><%= link_to station.name, router_station_path(@router, station) %></td>
                       <td><%= station.prefix.upcase %></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Router Information</h3>
-              <div class="card-tools">
-                <%= link_to 'Fetch', fetch_router_data_router_path(@router), remote: true, class: 'btn btn-sm btn-primary' %>
-              </div>
-            </div>
-            <div class="card-body">
-              <%=@router.raw_data.to_json%>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Hotspot User Profile</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createHotspotProfileModal">Create</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <table class="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Rate</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @profiles.each do |profile| %>
-                    <tr>
-                      <td><%= profile.id %></td>
-                      <td><%= profile.name%></td>
-                      <td><%= profile.rate%></td>
                     </tr>
                   <% end %>
                 </tbody>
@@ -141,13 +171,51 @@
           </div>
           <div class="form-group">
             <%= form.label :rate %>
-            <%= form.select :rate, Router::BANDWIDTH, { include_blank: false, prompt: '- Speed -'}, class: 'form-control' %>
+            <%= form.select :rate_limit, Router.bandwidth_options, { include_blank: false, prompt: '- Speed -'}, class: 'form-control' %>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <%= form.submit 'Create Profile', class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Router Modal -->
+<div class="modal" id="editRouterModal" tabindex="-1" role="dialog" aria-labelledby="editRouterModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_with(model: @router, url: router_path(@router), method: :patch, local: true) do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="editRouterModalLabel">Edit Router Connection</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.label :host_name %>
+            <%= form.text_field :host_name, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :port %>
+            <%= form.number_field :port, class: 'form-control', min: 1, max: 65535, placeholder: '22 (default)' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :username %>
+            <%= form.text_field :username, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :password %>
+            <%= form.password_field :password, class: 'form-control', value: @router.password %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <%= form.submit 'Save Changes', class: 'btn btn-primary' %>
         </div>
       <% end %>
     </div>

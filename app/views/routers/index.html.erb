@@ -28,6 +28,7 @@
                     <th>Host Name</th>
                     <th>Username</th>
                     <th>Password</th>
+                    <th>Port</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -39,6 +40,7 @@
                       <td><%= router.host_name %></td>
                       <td><%= router.username  %></td>
                       <td>******</td>
+                      <td><%= router.port %></td>
                       <td>Active</td>
                     </tr>
                   <% end %>
@@ -80,6 +82,10 @@
           <div class="form-group">
             <%= form.label :password %>
             <%= form.password_field :password, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :port %>
+            <%= form.number_field :port, class: 'form-control', min: 1, max: 65535, placeholder: '22 (default)' %>
           </div>
         </div>
 
