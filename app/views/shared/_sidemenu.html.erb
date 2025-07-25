@@ -1,29 +1,97 @@
-<aside class="main-sidebar sidebar-light-primary elevation-4">
-  <a href="index3.html" class="brand-link">
-    <span class="brand-text font-weight-light">AdminLTE 3</span>
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a href="<%= root_path %>" class="brand-link">
+    <img src="/icon.png" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <span class="brand-text font-weight-light">MikroTik Dashboard</span>
   </a>
 
-  
+  <!-- Sidebar -->
   <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="https://ui-avatars.com/api/?name=<%= current_user&.name || 'User' %>&background=007bff&color=fff" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        <a href="#" class="d-block"><%= current_user&.name || 'User' %></a>
+      </div>
+    </div>
+
+    <!-- Sidebar Menu -->
     <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        
+        <!-- Dashboard -->
         <li class="nav-item">
-          <%=link_to root_path, class: 'nav-link' do %>
-            <i class="fa-solid fa-gauge"></i>
-            <p>
-              Dashboard
-            </p>
+          <%= link_to root_path, class: "nav-link #{'active' if current_page?(root_path)}" do %>
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
           <% end %>
         </li>
+
+        <!-- Routers -->
         <li class="nav-item">
-          <%=link_to routers_path,class: 'nav-link' do %>
-            <i class="fa-solid fa-network-wired"></i>
+          <%= link_to routers_path, class: "nav-link #{'active' if controller_name == 'routers'}" do %>
+            <i class="nav-icon fas fa-network-wired"></i>
             <p>
               Routers
-              <span class="right badge badge-danger">New</span>
+              <span class="right badge badge-info"><%= current_user&.routers&.count || 0 %></span>
             </p>
           <% end %>
         </li>
+
+        <!-- Stations -->
+        <li class="nav-item">
+          <%= link_to stations_path, class: "nav-link #{'active' if controller_name == 'stations'}" do %>
+            <i class="nav-icon fas fa-wifi"></i>
+            <p>
+              Stations
+              <span class="right badge badge-success"><%= Station.by_user(current_user).count if current_user %></span>
+            </p>
+          <% end %>
+        </li>
+
+        <!-- Vouchers -->
+        <li class="nav-item">
+          <%= link_to vouchers_path, class: "nav-link #{'active' if controller_name == 'vouchers'}" do %>
+            <i class="nav-icon fas fa-ticket-alt"></i>
+            <p>
+              Vouchers
+              <% if current_user %>
+                <span class="right badge badge-warning"><%= Voucher.joins(station: :router).where(routers: { user: current_user }).count %></span>
+              <% end %>
+            </p>
+          <% end %>
+        </li>
+
+        <!-- Events -->
+        <li class="nav-item">
+          <%= link_to events_path, class: "nav-link #{'active' if controller_name == 'events'}" do %>
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>Events</p>
+          <% end %>
+        </li>
+
+        <!-- Reports Section -->
+        <li class="nav-header">REPORTS</li>
+        
+        <li class="nav-item">
+          <%= link_to login_counters_path, class: "nav-link #{'active' if controller_name == 'login_counters'}" do %>
+            <i class="nav-icon fas fa-chart-line"></i>
+            <p>Login Statistics</p>
+          <% end %>
+        </li>
+
+        <!-- Settings Section -->
+        <li class="nav-header">SETTINGS</li>
+        
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-cogs"></i>
+            <p>System Settings</p>
+          </a>
+        </li>
+
       </ul>
     </nav>
   </div>

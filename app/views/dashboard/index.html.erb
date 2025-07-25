@@ -1,17 +1,210 @@
-<%= render 'shared/header' %>
-<%= render 'shared/sidemenu' %>
-
-<!-- Content Wrapper -->
-<div class="content-wrapper">
-  <section class="content-header">
-    <div class="container-fluid">
-      <h1><%= content_for?(:title) ? yield(:title) : "Dashboard" %></h1>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Dashboard</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="content">
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
     
-  </section>
-</div>
-<%= render 'shared/footer' %>
+    <!-- Stats Cards Row -->
+    <div class="row">
+      <!-- Total Routers -->
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3><%= current_user.routers.count %></h3>
+            <p>Total Routers</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-network-wired"></i>
+          </div>
+          <%= link_to routers_path, class: "small-box-footer" do %>
+            More info <i class="fas fa-arrow-circle-right"></i>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Total Stations -->
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3><%= Station.by_user(current_user).count %></h3>
+            <p>Total Stations</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-wifi"></i>
+          </div>
+          <%= link_to stations_path, class: "small-box-footer" do %>
+            More info <i class="fas fa-arrow-circle-right"></i>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Total Vouchers -->
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3><%= Voucher.joins(station: :router).where(routers: { user: current_user }).count %></h3>
+            <p>Total Vouchers</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-ticket-alt"></i>
+          </div>
+          <%= link_to vouchers_path, class: "small-box-footer" do %>
+            More info <i class="fas fa-arrow-circle-right"></i>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Revenue Today -->
+      <div class="col-lg-3 col-6">
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h3>₱<%= Voucher.joins(station: :router).where(routers: { user: current_user }).today.sum(:amount) %></h3>
+            <p>Revenue Today</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-peso-sign"></i>
+          </div>
+          <a href="#" class="small-box-footer">
+            More info <i class="fas fa-arrow-circle-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts and Recent Activity Row -->
+    <div class="row">
+      <!-- Sales Chart -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-chart-pie mr-1"></i>
+              Voucher Sales (Last 10 Days)
+            </h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <% voucher_sales = Voucher.joins(station: :router)
+                                     .where(routers: { user: current_user })
+                                     .where("created_at >= ?", 10.days.ago)
+                                     .group_by_day(:created_at)
+                                     .sum(:amount) %>
+            <%= line_chart voucher_sales, height: "300px", colors: ["#007bff"] %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Vouchers -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Vouchers</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <ul class="products-list product-list-in-card pl-2 pr-2">
+              <% recent_vouchers = Voucher.joins(station: :router)
+                                          .where(routers: { user: current_user })
+                                          .recent
+                                          .limit(5)
+                                          .includes(:station) %>
+              <% if recent_vouchers.any? %>
+                <% recent_vouchers.each do |voucher| %>
+                  <li class="item">
+                    <div class="product-img">
+                      <span class="badge badge-<%= voucher.collected? ? 'success' : 'warning' %>">
+                        <%= voucher.status %>
+                      </span>
+                    </div>
+                    <div class="product-info">
+                      <a href="<%= voucher_path(voucher) %>" class="product-title">
+                        <%= voucher.code %>
+                        <span class="badge badge-info float-right">₱<%= voucher.amount %></span>
+                      </a>
+                      <span class="product-description">
+                        <%= voucher.station_name %> • <%= time_ago_in_words(voucher.created_at) %> ago
+                      </span>
+                    </div>
+                  </li>
+                <% end %>
+              <% else %>
+                <li class="item">
+                  <div class="product-info">
+                    <span class="product-description text-muted">
+                      No vouchers found
+                    </span>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+          <div class="card-footer text-center">
+            <%= link_to "View All Vouchers", vouchers_path, class: "uppercase" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Row -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-bolt mr-1"></i>
+              Quick Actions
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <%= link_to routers_path, class: "btn btn-primary btn-block" do %>
+                  <i class="fas fa-plus mr-1"></i> Add Router
+                <% end %>
+              </div>
+              <div class="col-md-3">
+                <%= link_to stations_path, class: "btn btn-success btn-block" do %>
+                  <i class="fas fa-plus mr-1"></i> Add Station
+                <% end %>
+              </div>
+              <div class="col-md-3">
+                <%= link_to vouchers_path, class: "btn btn-warning btn-block" do %>
+                  <i class="fas fa-eye mr-1"></i> View Vouchers
+                <% end %>
+              </div>
+              <div class="col-md-3">
+                <%= link_to events_path, class: "btn btn-info btn-block" do %>
+                  <i class="fas fa-calendar mr-1"></i> View Events
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
 

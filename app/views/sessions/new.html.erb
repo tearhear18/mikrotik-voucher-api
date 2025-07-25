@@ -1,26 +1,87 @@
-<div class="d-flex justify-content-center align-items-center vh-100">
-  <div class="card p-4 shadow-lg" style="width: 400px;">
-    <h4 class="text-center mb-4">Login</h4>
+<!DOCTYPE html>
+<html class="hold-transition login-page">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MikroTik Dashboard | Log in</title>
+  
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- AdminLTE -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition login-page">
+  <div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+      <div class="card-header text-center">
+        <a href="<%= root_path %>" class="h1"><b>MikroTik</b> Dashboard</a>
+      </div>
+      <div class="card-body">
+        <p class="login-box-msg">Sign in to start your session</p>
 
-    <%= form_with url: sessions_path, method: :post, local: true do |form| %>
-      <div class="mb-3">
-        <%= form.label :username, class: "form-label" %>
-        <%= form.text_field :username, class: "form-control", placeholder: "Enter username" %>
-      </div>
+        <% if flash[:alert] %>
+          <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <i class="icon fas fa-ban"></i> <%= flash[:alert] %>
+          </div>
+        <% end %>
 
-      <div class="mb-3">
-        <%= form.label :password, class: "form-label" %>
-        <%= form.password_field :password, class: "form-control", placeholder: "Enter password" %>
-      </div>
+        <%= form_with url: sessions_path, method: :post, local: true do |form| %>
+          <div class="input-group mb-3">
+            <%= form.text_field :username, class: "form-control", placeholder: "Username" %>
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
 
-      <div class="d-grid">
-        <%= form.submit "Login", class: "btn btn-primary" %>
+          <div class="input-group mb-3">
+            <%= form.password_field :password, class: "form-control", placeholder: "Password" %>
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="remember">
+                <label for="remember">
+                  Remember Me
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-4">
+              <%= form.submit "Sign In", class: "btn btn-primary btn-block" %>
+            </div>
+            <!-- /.col -->
+          </div>
+        <% end %>
+
+        <p class="mb-1">
+          <a href="#">I forgot my password</a>
+        </p>
       </div>
-    <% end %>
-    <% if flash[:alert] %>
-      <div class="alert alert-danger mt-4 mb-0 text-center" role="alert">
-          <%= flash[:alert] %>
-      </div>
-    <% end %>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
   </div>
-</div>
+  <!-- /.login-box -->
+
+  <!-- jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+</body>
+</html>

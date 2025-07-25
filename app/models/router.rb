@@ -3,6 +3,11 @@ class Router < ApplicationRecord
   has_many :hotspot_profiles, dependent: :destroy
   belongs_to :user
 
+  validates :host_name, presence: true, format: { with: /\A\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/, message: "must be a valid IP address" }
+  validates :username, presence: true
+  validates :password, presence: true
+  validates :name, presence: true
+
   BANDWIDTH = {
     "1 MBPS"=>"1M/1M",
     "2 MBPS"=>"2M/2M",
@@ -32,5 +37,9 @@ class Router < ApplicationRecord
       user: username,
       password: password
     ) 
+  end
+
+  def configuration_service
+    @configuration_service ||= RouterConfigurationService.new(self)
   end
 end
