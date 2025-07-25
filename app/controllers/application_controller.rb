@@ -14,8 +14,4 @@ class ApplicationController < ActionController::Base
     flash[:alert] = exception.message
     redirect_to exception.path
   end
-
-  def current_user_vouchers
-    Voucher.joins(station: :router).where(routers: { user: current_user })
-  end
 end
