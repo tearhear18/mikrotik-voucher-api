@@ -1,0 +1,157 @@
+<%= render 'shared/header' %>
+<%= render 'shared/sidemenu' %>
+
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <h1><%= @router.name%></h1>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Stations List</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#newStationModal">New Station</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Prefix</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @stations.each do |station| %>
+                    <tr>
+                      <td><%= station.id %></td>
+                      <td><%= link_to station.name, router_station_path(@router, station) %></td>
+                      <td><%= station.prefix.upcase %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Router Information</h3>
+              <div class="card-tools">
+                <%= link_to 'Fetch', fetch_router_data_router_path(@router), remote: true, class: 'btn btn-sm btn-primary' %>
+              </div>
+            </div>
+            <div class="card-body">
+              <%=@router.raw_data.to_json%>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Hotspot User Profile</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createHotspotProfileModal">Create</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @profiles.each do |profile| %>
+                    <tr>
+                      <td><%= profile.id %></td>
+                      <td><%= profile.name%></td>
+                      <td><%= profile.rate%></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<%= render 'shared/footer' %>
+
+
+<div class="modal" id="newStationModal" tabindex="-1" role="dialog" aria-labelledby="newStationModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_with(model: [@router, Station.new], local: true) do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="newStationModalLabel">Add Station to Router</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.label :name %>
+            <%= form.text_field :name, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :prefix %>
+            <%= form.text_field :prefix, class: 'form-control', maxlength: 2, pattern: '[A-Za-z]{2}', title: 'Only 2 letters allowed' %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <%= form.submit 'Create Station', class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="createHotspotProfileModal" tabindex="-1" role="dialog" aria-labelledby="createHotspotProfileModallLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_with(model: [@router, @router.hotspot_profiles.new], local: true) do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="createHotspotProfileModallLabel">Add User Profile</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.label :name %>
+            <%= form.text_field :name, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :rate %>
+            <%= form.select :rate, Router::BANDWIDTH, { include_blank: false, prompt: '- Speed -'}, class: 'form-control' %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <%= form.submit 'Create Profile', class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+

@@ -32,7 +32,24 @@ class StationsController < ApplicationController
     end
   end
 
+  def create 
+    @router = current_user.routers.find(params[:router_id])
+    @station = @router.stations.new(station_params)
+    if @station.save
+      redirect_to @router, notice: 'Station was successfully created.'
+    else
+      redirect_to @router, alert: "Failed to fetch router data: #{e.message}"
+    end
+  end
+
   def show
-    @station = Station.find(params[:id])
+    @router = current_user.routers.find(params[:router_id])
+    @station = @router.stations.find(params[:id])
+  end
+
+  private 
+
+  def station_params
+    params.require(:station).permit(:name, :prefix, :router_id)
   end
 end

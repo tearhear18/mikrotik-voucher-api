@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="card p-4 shadow-lg" style="width: 400px;">
+    <h4 class="text-center mb-4">Login</h4>
+
+    <%= form_with url: sessions_path, method: :post, local: true do |form| %>
+      <div class="mb-3">
+        <%= form.label :username, class: "form-label" %>
+        <%= form.text_field :username, class: "form-control", placeholder: "Enter username" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :password, class: "form-label" %>
+        <%= form.password_field :password, class: "form-control", placeholder: "Enter password" %>
+      </div>
+
+      <div class="d-grid">
+        <%= form.submit "Login", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div class="alert alert-danger mt-4 mb-0 text-center" role="alert">
+          <%= flash[:alert] %>
+      </div>
+    <% end %>
+  </div>
+</div>

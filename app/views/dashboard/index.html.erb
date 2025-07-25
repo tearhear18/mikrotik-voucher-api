@@ -1,0 +1,17 @@
+<%= render 'shared/header' %>
+<%= render 'shared/sidemenu' %>
+
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <h1><%= content_for?(:title) ? yield(:title) : "Dashboard" %></h1>
+    </div>
+  </section>
+
+  <section class="content">
+    
+  </section>
+</div>
+<%= render 'shared/footer' %>
+

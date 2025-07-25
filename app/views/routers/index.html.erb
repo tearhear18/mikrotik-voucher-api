@@ -1,0 +1,94 @@
+<%= render 'shared/header' %>
+<%= render 'shared/sidemenu' %>
+
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <h1>Routers</h1>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-tools">
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#newRouterModal">New Router</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Host Name</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @routers.each do |router| %>
+                    <tr>
+                      <td><%= router.id %></td>
+                      <td><%= link_to router.name, router_path(router) %></td>
+                      <td><%= router.host_name %></td>
+                      <td><%= router.username  %></td>
+                      <td>******</td>
+                      <td>Active</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<%= render 'shared/footer' %>
+
+<div class="modal" id="newRouterModal" tabindex="-1" role="dialog" aria-labelledby="newRouterModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <%= form_with(model: Router.new, url: routers_path, local: true) do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title" id="newRouterModalLabel">Add New Router</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <%= form.label :name %>
+            <%= form.text_field :name, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :host_name %>
+            <%= form.text_field :host_name, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :username %>
+            <%= form.text_field :username, class: 'form-control' %>
+          </div>
+          <div class="form-group">
+            <%= form.label :password %>
+            <%= form.password_field :password, class: 'form-control' %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <%= form.submit 'Create Router', class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

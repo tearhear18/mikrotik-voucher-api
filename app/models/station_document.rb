@@ -1,0 +1,2 @@
+class StationDocument < ApplicationRecord
+end

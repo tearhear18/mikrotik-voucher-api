@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
-  get "stations/index"
-  get "events/create"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -12,7 +11,26 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "stations#index"
+  root "dashboard#index"
+
+  resources :routers do 
+    member do
+      get :fetch_router_data
+    end
+
+    resources :stations
+    resources :hotspot_profiles
+  end
+  
+  resources :sessions, only: [:new, :create] do 
+    collection do 
+      get :logout
+    end
+  end
+
+
+
+
 
   resources :vouchers, only: [ :index, :create ]
   resources :events, only: [ :create ]

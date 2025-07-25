@@ -1,144 +1,31 @@
-<div class="container mt-4">
-  <div class="row">
-
-    <!-- Total Events -->
-    <div class="col-md-3 col-sm-6 mb-4">
-      <div class="card text-white bg-primary shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Gross Sales</h5>
-          <h2>₱ <%=number_with_delimiter Voucher.sum(:amount)%></h2>
-        </div>
-      </div>
-    </div>
-
-    <!-- Total Logins -->
-    
-    <div class="col-md-3 col-sm-6 mb-4">
-      <div class="card text-white bg-info shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Today Sales</h5>
-          <h2>₱ <%=number_with_delimiter @todays_vouchers.sum(:amount) %></h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 mb-4">
-      <div class="card text-white bg-success shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Gross Collected</h5>
-          <h2>₱ <%=number_with_delimiter Voucher.collected.sum(:amount)%></h2>
-        </div>
-      </div>
-    </div>
-
-    <!-- Total Logouts -->
-    <div class="col-md-3 col-sm-6 mb-4">
-      <div class="card text-white bg-danger shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Gross Collectibles</h5>
-          <h2>₱ <%=number_with_delimiter Voucher.not_collected.sum(:amount)%></h2>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-
-  <div class="row">
-    <div class="col-12 col-md-6">
-      <h5>All Stations Sales</h5>
-      <%= column_chart @voucher_sales, 
-        ytitle: "Voucher Sales", 
-        xtitle: "Date",
-        library: {
-          plotOptions: {
-            column: {
-              dataLabels: {
-                enabled: true
-              }
-            }
-          }
-        } 
-      %>
-    </div>
-
-    <div class="col-12 col-md-6">
-      <h5>Per Station Daily Sales</h5>
-      <%= column_chart @per_station_daily_sales.map { |date, agents| { name: date, data: agents } }, 
-      ytitle: "Station Sale",
-      library: {
-        plotOptions: {
-          column: {
-            dataLabels: {
-              enabled: true
-            }
-          }
-        }
-      } %>
-    </div>
-    <div class="col-12">
-      <h5>Today Online Stats</h5>
-      <%= line_chart [
-      { name: "Login", data: @online }
-    ],
-    xtitle: "Time (Hour)",
-    ytitle: "Event Count",
-    curve: true %>
-    </div>
-  </div>
-  <div class="col-12">
-    <div class="table-responsive">
-      <table class="table table-striped mt-3">
-        <thead>
+<div class="container">
+  <h1><%= @station.name %>(<%= @station.prefix %>)</h1>
+  <% if @station.vouchers.any? %>
+    <h2>Vouchers</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Code</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @station.vouchers.each do |voucher| %>
           <tr>
-            <th>Station Name</th>
-            <th>Prefix</th>
-            <th>Sold Voucher</th>
-            <th>Gross Sales</th>
-            <th>Gross Uncollected</th>
-            <th>Gross Collected</th>
-            <th>Commission</th>
-            <th>Net Collectibles</th>
-            <th>Net Income</th>
+            <td><%= voucher.id %></td>
+            <td><%= voucher.code %></td>
+            <td><%= voucher.amount %></td>
           </tr>
-        </thead>
-        <tbody>
-          <% @stations.each do |station| %>
-            <tr>
-              <td><%=link_to station.name, station_path(station)%></td>
-              <td><%= station.prefix %></td>
-              <td><%= station.vouchers.count %></td>
-              <td>₱ <%=number_with_delimiter station.vouchers.sum(:amount) %></td>
-              <td>₱ <%=number_with_delimiter station.vouchers.not_collected.sum(:amount) %></td>
-              <td>₱ <%=number_with_delimiter station.vouchers.collected.sum(:amount) %></td>
-              <td>₱ <%=number_with_delimiter(station.commission) %></td>
-              <td>₱ <%=number_with_delimiter(station.vouchers.not_collected.sum(:amount) - station.commission) %></td>
-              <td>₱ <%=number_with_delimiter station.vouchers.sum(:amount) * 0.7%></td>
-            </tr>
-          <% end %>
-          <tr>
-            <td colspan="2" class="text-right">TOTAL</td>
-            <td><%= Voucher.count%></td>
-            <td>₱ <%=number_with_delimiter Voucher.sum(:amount) %></td>
-            <td>₱ <%=number_with_delimiter Voucher.not_collected.sum(:amount) %></td>
-            <td>₱ <%=number_with_delimiter Voucher.collected.sum(:amount) %></td>
-            <td>₱ <%=number_with_delimiter( Voucher.not_collected.sum(:amount) * 0.3) %></td>
-            <td>₱ <%=number_with_delimiter( Voucher.not_collected.sum(:amount) - ( Voucher.not_collected.sum(:amount) * 0.3) ) %></td>
-            <td>₱ <%=number_with_delimiter Voucher.sum(:amount) * 0.7 %></td>
-          </tr>
-        </tbody>
-      </table>
+        <% end %>
+        <tr>
+          <td colspan="2" class="text-right"><strong>Total Amount:</strong></td>
+          <td><%= @station.vouchers.sum(:amount) %></td>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alert alert-info" role="alert">
+      No vouchers found for this station.
     </div>
-  </div>
+  <% end %>
 </div>
-
-<% if @stations.empty? %>
-  <div class="alert alert-info" role="alert">
-    No stations found.
-  </div>
-<% end %>
-<% if flash[:notice] %>
-  <div class="alert alert-success" role="alert">
-    <%= flash[:notice] %>
-  </div>
-<% end %>
