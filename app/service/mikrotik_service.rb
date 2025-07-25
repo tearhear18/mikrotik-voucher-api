@@ -2,13 +2,14 @@ require 'net/ssh'
 require 'shellwords'
 
 class MikrotikService
-  class ConnectionError < StandardError; end
+  class ConnectionErwror < StandardError; end
   class CommandError < StandardError; end
 
-  def initialize(host:, user:, password:)
+  def initialize(host:, user:, password:, port: 22)
     @host = host
     @user = user
     @password = password
+    @port = port
     @connection = nil
   end
 
@@ -59,6 +60,7 @@ class MikrotikService
   def establish_connection
     Net::SSH.start(@host, @user, 
                    password: @password, 
+                   port: @port,
                    timeout: 10,
                    auth_methods: ['password'],
                    verbose: :error)

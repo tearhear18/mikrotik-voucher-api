@@ -1,0 +1,35 @@
+<% if device_info.present? %>
+  <div class="card card-primary card-outline mb-3">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fas fa-microchip"></i> Device Info</h3>
+      
+      <div class="card-tools">
+        <%= link_to 'Fetch Device Info', fetch_router_data_router_path(@router), remote: true, class: 'btn btn-sm btn-primary' %>
+      </div>
+    </div>
+    <div class="card-body p-2">
+      <table class="table table-sm table-striped mb-0">
+        <tbody>
+          <tr><th>CPU</th><td><%= device_info['cpu'] %> (<%= device_info['cpu-count'] %> cores, <%= device_info['cpu-frequency'] %>)</td></tr>
+          <tr><th>CPU Load</th><td><%= device_info['cpu-load'] %></td></tr>
+          <tr><th>Uptime</th><td><%= device_info['uptime'] %></td></tr>
+          <tr><th>Architecture</th><td><%= device_info['architecture-name'] %></td></tr>
+          <tr><th>Memory</th><td><%= device_info['free-memory'] %> free / <%= device_info['total-memory'] %> total</td></tr>
+          <tr><th>HDD</th><td><%= device_info['free-hdd-space'] %> free / <%= device_info['total-hdd-space'] %> total</td></tr>
+          <tr><th>Board</th><td><%= device_info['board-name'] %></td></tr>
+          <tr><th>Version</th><td><%= device_info['version'] %></td></tr>
+          <tr><th>Platform</th><td><%= device_info['platform'] %></td></tr>
+          <tr><th>Factory SW</th><td><%= device_info['factory-software'] %></td></tr>
+          <tr><th>Build Time</th><td><%= device_info['build-time'] %></td></tr>
+          <tr><th>Bad Blocks</th><td><%= device_info['bad-blocks'] %></td></tr>
+          <tr><th>Write Sectors</th><td><%= device_info['write-sect-total'] %> / <%= device_info['write-sect-since-reboot'] %></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer text-muted">
+      Last updated: <%= last_updated %>
+    </div>
+  </div>
+<% else %>
+  <div class="alert alert-warning">No device info available.</div>
+<% end %> 

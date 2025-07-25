@@ -8,6 +8,7 @@ class Router < ApplicationRecord
   validates :host_name, presence: true, format: { with: /\A\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\z/, message: "must be a valid IP address" }
   validates :username, presence: true
   validates :password, presence: true
+  validates :port, numericality: { only_integer: true, greater_than: 0, less_than: 65536 }, allow_nil: true
 
   def configuration_service
     @configuration_service ||= RouterConfigurationService.for_router(self)

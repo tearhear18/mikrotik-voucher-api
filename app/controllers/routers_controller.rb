@@ -67,6 +67,6 @@ class RoutersController < ApplicationController
   end
 
   def router_params
-    params.require(:router).permit(:name, :host_name, :username, :password)
+    params.require(:router).permit(:name, :host_name, :username, :password, :port)
   end
 end

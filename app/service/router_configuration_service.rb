@@ -17,7 +17,8 @@ class RouterConfigurationService
     {
       host: @router.host_name,
       user: @router.username,
-      password: @router.password
+      password: @router.password,
+      port: @router.respond_to?(:port) && @router.port.present? ? @router.port : 22
     }
   end
 

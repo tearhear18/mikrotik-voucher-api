@@ -9,6 +9,9 @@ class AddMissingColumns < ActiveRecord::Migration[8.0]
     # Add raw_data to routers for storing connection info
     add_column :routers, :raw_data, :text, null: true unless column_exists?(:routers, :raw_data)
     
+    # Add port to routers for custom SSH port support
+    add_column :routers, :port, :integer, null: true unless column_exists?(:routers, :port)
+    
     # Add missing columns to hotspot_profiles if they don't exist
     unless column_exists?(:hotspot_profiles, :name)
       add_column :hotspot_profiles, :name, :string, null: false
