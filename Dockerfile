@@ -1,16 +1,15 @@
 FROM ruby:3.3
 
+# Install curl and gnupg2 first (needed for adding Node.js repo)
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends curl gnupg2
+
+# Add NodeSource Node.js repo
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+
 # Install system dependencies
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    curl \
-    gnupg2 \
-    libpq-dev \
-    git \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends build-essential libpq-dev nodejs git
 
 # Set working directory
 WORKDIR /myapp
